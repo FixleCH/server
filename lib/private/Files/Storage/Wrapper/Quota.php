@@ -71,18 +71,19 @@ class Quota extends Wrapper {
 		}
 	}
 
+	#[\Override]
 	public function free_space(string $path): int|float|false {
 		if (!$this->hasQuota()) {
-			return $this->storage->free_space($path);
+			return $this->getWrapperStorage()->free_space($path);
 		}
 		if ($this->getQuota() < 0 || str_starts_with($path, 'cache') || str_starts_with($path, 'uploads')) {
-			return $this->storage->free_space($path);
+			return $this->getWrapperStorage()->free_space($path);
 		} else {
 			$used = $this->getSize($this->sizeRoot);
 			if ($used < 0) {
 				return FileInfo::SPACE_NOT_COMPUTED;
 			} else {
-				$free = $this->storage->free_space($path);
+				$free = $this->getWrapperStorage()->free_space($path);
 				$quotaFree = max($this->getQuota() - $used, 0);
 				// if free space is known
 				$free = $free >= 0 ? min($free, $quotaFree) : $quotaFree;
@@ -91,35 +92,38 @@ class Quota extends Wrapper {
 		}
 	}
 
+	#[\Override]
 	public function file_put_contents(string $path, mixed $data): int|float|false {
 		if (!$this->hasQuota()) {
-			return $this->storage->file_put_contents($path, $data);
+			return $this->getWrapperStorage()->file_put_contents($path, $data);
 		}
 		$free = $this->free_space($path);
 		if ($free < 0 || strlen($data) < $free) {
-			return $this->storage->file_put_contents($path, $data);
+			return $this->getWrapperStorage()->file_put_contents($path, $data);
 		} else {
 			return false;
 		}
 	}
 
+	#[\Override]
 	public function copy(string $source, string $target): bool {
 		if (!$this->hasQuota()) {
-			return $this->storage->copy($source, $target);
+			return $this->getWrapperStorage()->copy($source, $target);
 		}
 		$free = $this->free_space($target);
 		if ($free < 0 || $this->getSize($source) < $free) {
-			return $this->storage->copy($source, $target);
+			return $this->getWrapperStorage()->copy($source, $target);
 		} else {
 			return false;
 		}
 	}
 
+	#[\Override]
 	public function fopen(string $path, string $mode) {
 		if (!$this->hasQuota()) {
-			return $this->storage->fopen($path, $mode);
+			return $this->getWrapperStorage()->fopen($path, $mode);
 		}
-		$source = $this->storage->fopen($path, $mode);
+		$source = $this->getWrapperStorage()->fopen($path, $mode);
 
 		// don't apply quota for part files
 		if (!$this->isPartFile($path)) {
@@ -154,33 +158,36 @@ class Quota extends Wrapper {
 		return str_starts_with(ltrim($path, '/'), 'files/');
 	}
 
+	#[\Override]
 	public function copyFromStorage(IStorage $sourceStorage, string $sourceInternalPath, string $targetInternalPath): bool {
 		if (!$this->hasQuota()) {
-			return $this->storage->copyFromStorage($sourceStorage, $sourceInternalPath, $targetInternalPath);
+			return $this->getWrapperStorage()->copyFromStorage($sourceStorage, $sourceInternalPath, $targetInternalPath);
 		}
 		$free = $this->free_space($targetInternalPath);
 		if ($free < 0 || $this->getSize($sourceInternalPath, $sourceStorage) < $free) {
-			return $this->storage->copyFromStorage($sourceStorage, $sourceInternalPath, $targetInternalPath);
+			return $this->getWrapperStorage()->copyFromStorage($sourceStorage, $sourceInternalPath, $targetInternalPath);
 		} else {
 			return false;
 		}
 	}
 
+	#[\Override]
 	public function moveFromStorage(IStorage $sourceStorage, string $sourceInternalPath, string $targetInternalPath): bool {
 		if (!$this->hasQuota()) {
-			return $this->storage->moveFromStorage($sourceStorage, $sourceInternalPath, $targetInternalPath);
+			return $this->getWrapperStorage()->moveFromStorage($sourceStorage, $sourceInternalPath, $targetInternalPath);
 		}
 		$free = $this->free_space($targetInternalPath);
 		if ($free < 0 || $this->getSize($sourceInternalPath, $sourceStorage) < $free) {
-			return $this->storage->moveFromStorage($sourceStorage, $sourceInternalPath, $targetInternalPath);
+			return $this->getWrapperStorage()->moveFromStorage($sourceStorage, $sourceInternalPath, $targetInternalPath);
 		} else {
 			return false;
 		}
 	}
 
+	#[\Override]
 	public function mkdir(string $path): bool {
 		if (!$this->hasQuota()) {
-			return $this->storage->mkdir($path);
+			return $this->getWrapperStorage()->mkdir($path);
 		}
 		$free = $this->free_space($path);
 		if ($this->shouldApplyQuota($path) && $free == 0) {
@@ -190,9 +197,10 @@ class Quota extends Wrapper {
 		return parent::mkdir($path);
 	}
 
+	#[\Override]
 	public function touch(string $path, ?int $mtime = null): bool {
 		if (!$this->hasQuota()) {
-			return $this->storage->touch($path, $mtime);
+			return $this->getWrapperStorage()->touch($path, $mtime);
 		}
 		$free = $this->free_space($path);
 		if ($free == 0) {

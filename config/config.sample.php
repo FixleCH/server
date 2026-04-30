@@ -1349,7 +1349,8 @@ $CONFIG = [
 	 * By default, activities in team folders or external storages are only generated
 	 * for the current user. This is due to a limitations in current implementations.
 	 * This config flag makes activities in group folders and external storages work
-	 * like in normal shares (when set to ``true``).
+	 * like in normal shares (when set to ``true``). Setting this flag does not allow
+	 * past activities to be displayed (no retroactivity).
 	 *
 	 * WARNING: Enabling this comes with some CRITICAL trade-offs:
 	 *
@@ -2403,9 +2404,9 @@ $CONFIG = [
 	 * Changing this may cause older, unsupported clients to malfunction, potentially
 	 * leading to data loss or unexpected behavior.
 	 *
-	 * Defaults to ``3.1.81``
+	 * Defaults to ``3.2.50``
 	 */
-	'minimum.supported.desktop.version' => '3.1.81',
+	'minimum.supported.desktop.version' => '3.2.50',
 
 	/**
 	 * Specify the maximum Nextcloud desktop client version allowed to sync with this
@@ -2829,9 +2830,23 @@ $CONFIG = [
 	'diagnostics.logging.threshold' => 0,
 
 	/**
-	 * Enable profiling globally.
+	 * Toggle availability of user profiles.
 	 *
-	 * Defaults to ``true``
+	 * User profile pages contain information that can be shared with other users,
+	 * such as full name, phone number, organization, role, and similar fields.
+	 *
+	 * Profiles are enabled by default, and profile data may be used by other
+	 * features (for example, the system address book).
+	 *
+	 * Profile visibility is layered: what is shared depends on a combination of
+	 * system-wide and account-level privacy controls, and each field's visibility
+	 * can be configured.
+	 *
+	 * When set to false, profile functionality is disabled instance-wide.
+	 *
+	 * Note: This affects user account profiles, not the developer performance profiler.
+	 *
+	 * Defaults to `true`
 	 */
 	'profile.enabled' => true,
 
@@ -2916,7 +2931,7 @@ $CONFIG = [
 	/**
 	 * Maximum number of chunks uploaded in parallel during chunked uploads. Higher
 	 * counts increase throughput but consume more server resources, with diminishing
-	 * returns.
+	 * returns. Value must be a positive integer.
 	 *
 	 * Defaults to ``5``
 	 */
