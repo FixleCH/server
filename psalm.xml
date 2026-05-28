@@ -20,9 +20,11 @@
 		<plugin filename="build/psalm/AppFrameworkTainter.php" />
 		<plugin filename="build/psalm/AttributeNamedParameters.php" />
 		<plugin filename="build/psalm/LogicalOperatorChecker.php" />
+		<pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
 	</plugins>
 	<projectFiles>
 		<directory name="apps/admin_audit"/>
+		<directory name="apps/appstore"/>
 		<directory name="apps/cloud_federation_api"/>
 		<directory name="apps/comments"/>
 		<directory name="apps/contactsinteraction"/>
@@ -67,7 +69,32 @@
 		<file name="tests/lib/TestCase.php"/>
 		<file name="tests/lib/Files/Template/*.php"/>
 		<ignoreFiles>
-			<directory name="apps/**/tests"/>
+			<directory name="apps/admin_audit/tests"/>
+			<directory name="apps/cloud_federation_api/tests"/>
+			<directory name="apps/contactsinteraction/tests"/>
+			<directory name="apps/dashboard/tests"/>
+			<directory name="apps/dav/tests"/>
+			<directory name="apps/encryption/tests"/>
+			<directory name="apps/federatedfilesharing/tests"/>
+			<directory name="apps/federation/tests"/>
+			<directory name="apps/files/tests"/>
+			<directory name="apps/files_external/tests"/>
+			<directory name="apps/files_sharing/tests"/>
+			<directory name="apps/files_trashbin/tests"/>
+			<directory name="apps/files_versions/tests"/>
+			<directory name="apps/oauth2/tests"/>
+			<directory name="apps/profile/tests"/>
+			<directory name="apps/provisioning_api/tests"/>
+			<directory name="apps/settings/tests"/>
+			<directory name="apps/sharebymail/tests"/>
+			<directory name="apps/systemtags/tests"/>
+			<directory name="apps/theming/tests"/>
+			<directory name="apps/twofactor_backupcodes/tests"/>
+			<directory name="apps/updatenotification/tests"/>
+			<directory name="apps/user_ldap/tests"/>
+			<directory name="apps/user_status/tests"/>
+			<directory name="apps/webhook_listeners/tests"/>
+			<directory name="apps/workflowengine/tests"/>
 			<directory name="apps/**/composer"/>
 			<directory name="lib/composer"/>
 			<directory name="lib/l10n"/>
@@ -89,9 +116,11 @@
 		<file name="build/stubs/SensitiveParameter.phpstub"/>
 		<file name="build/stubs/ldap.php"/>
 		<file name="build/stubs/memcached.php"/>
+		<file name="build/stubs/openssl.php"/>
 		<file name="build/stubs/redis.php"/>
 		<file name="build/stubs/redis_cluster.php"/>
 		<file name="build/stubs/sftp.php"/>
+		<file name="build/stubs/sodium.php"/>
 		<file name="build/stubs/ssh2.php"/>
 		<file name="build/stubs/xsl.php"/>
 		<file name="build/stubs/ftp.php"/>

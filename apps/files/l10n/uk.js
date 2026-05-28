@@ -180,7 +180,7 @@ OC.L10N.register(
     "Search everywhere …" : "Шукайте скрізь ...",
     "Search here …" : "Шукайте тут ...",
     "Search scope options" : "Визначити місце пошуку",
-    "Search here" : "Шукати тут",
+    "Search here" : "Швидкий пошук",
     "Owner" : "Власник",
     "{usedQuotaByte} used" : "{usedQuotaByte} використано",
     "{used} of {quota} used" : "Використано {used} із {quota}",
@@ -325,9 +325,7 @@ OC.L10N.register(
     "The files are locked" : "Файли заблоковано",
     "The file does not exist anymore" : "Цей файл більше недоступний",
     "Moving \"{source}\" to \"{destination}\" …" : "Переміщення \"{source}\" на \"{destination}\" ...",
-    "Moving {count} files to \"{destination}\" …" : "Переміщення {count} файлів до \"{destination}\" ...",
     "Copying \"{source}\" to \"{destination}\" …" : "Копіювання \"{source}\" в \"{destination}\" ...",
-    "Copying {count} files to \"{destination}\" …" : "Копіювання {count} файлів до \"{destination}\" ...",
     "Choose destination" : "Виберіть каталог призначення",
     "Copy to {target}" : "Копіювати до {target}",
     "Move to {target}" : "Перемістити до {target}",
@@ -406,7 +404,7 @@ OC.L10N.register(
     "Clear filter" : "Очистити фільтр",
     "Open file sidebar" : "Відкрити бічну панель файлів",
     "Search everywhere …" : "Шукати всюди ...",
-    "Search here …" : "Шукати тут …",
+    "Search here …" : "Швидкий пошук …",
     "Preparing …" : "Підготовка ...",
     "Submitting fields …" : "Надсилання полів ...",
     "Invalid path selected" : "Вибрано неправильний шлях",
@@ -421,6 +419,8 @@ OC.L10N.register(
     "Tags" : "Мітки",
     "Save as …" : "Зберегти як ...",
     "Converting files …" : "Конвертування файлів ...",
-    "Converting file …" : "Конвертування файлу ..."
+    "Converting file …" : "Конвертування файлу ...",
+    "Moving {count} files to \"{destination}\" …" : "Переміщення {count} файлів до \"{destination}\" ...",
+    "Copying {count} files to \"{destination}\" …" : "Копіювання {count} файлів до \"{destination}\" ..."
 },
 "nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);");

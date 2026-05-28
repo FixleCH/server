@@ -16,7 +16,7 @@
   },
   "apps/files_sharing/src/views/SharingDetailsTab.vue": {
     "vue/no-mutating-props": {
-      "count": 23
+      "count": 24
     }
   },
   "apps/files_sharing/src/views/SharingLinkList.vue": {
@@ -30,11 +30,8 @@
     }
   },
   "apps/settings/src/components/Users/NewUserDialog.vue": {
-    "@nextcloud/no-deprecated-library-props": {
-      "count": 1
-    },
     "vue/no-mutating-props": {
-      "count": 17
+      "count": 2
     }
   },
   "apps/settings/src/views/UserManagementNavigation.vue": {
