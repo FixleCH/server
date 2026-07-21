@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC;
 
 use OC\Hooks\PublicEmitter;
@@ -109,7 +110,7 @@ class SubAdmin extends PublicEmitter implements ISubAdmin {
 			->executeQuery();
 
 		$groups = [];
-		while ($row = $result->fetch()) {
+		while ($row = $result->fetchAssociative()) {
 			$groups[] = $row['gid'];
 		}
 		$result->closeCursor();
@@ -143,7 +144,7 @@ class SubAdmin extends PublicEmitter implements ISubAdmin {
 			->executeQuery();
 
 		$users = [];
-		while ($row = $result->fetch()) {
+		while ($row = $result->fetchAssociative()) {
 			$user = $this->userManager->get($row['uid']);
 			if (!is_null($user)) {
 				$users[] = $user;
@@ -166,7 +167,7 @@ class SubAdmin extends PublicEmitter implements ISubAdmin {
 			->executeQuery();
 
 		$subadmins = [];
-		while ($row = $result->fetch()) {
+		while ($row = $result->fetchAssociative()) {
 			$user = $this->userManager->get($row['uid']);
 			$group = $this->groupManager->get($row['gid']);
 			if (!is_null($user) && !is_null($group)) {
@@ -200,7 +201,7 @@ class SubAdmin extends PublicEmitter implements ISubAdmin {
 			->andWhere($qb->expr()->eq('uid', $qb->createNamedParameter($user->getUID())))
 			->executeQuery();
 
-		$fetch = $result->fetch();
+		$fetch = $result->fetchAssociative();
 		$result->closeCursor();
 		$result = !empty($fetch) ? true : false;
 
@@ -232,7 +233,7 @@ class SubAdmin extends PublicEmitter implements ISubAdmin {
 			->setMaxResults(1)
 			->executeQuery();
 
-		$isSubAdmin = $result->fetch();
+		$isSubAdmin = $result->fetchAssociative();
 		$result->closeCursor();
 
 		return $isSubAdmin !== false;
@@ -253,6 +254,9 @@ class SubAdmin extends PublicEmitter implements ISubAdmin {
 			return false;
 		}
 		if ($this->groupManager->isAdmin($user->getUID())) {
+			return false;
+		}
+		if ($this->groupManager->isDelegatedAdmin($user->getUID())) {
 			return false;
 		}
 

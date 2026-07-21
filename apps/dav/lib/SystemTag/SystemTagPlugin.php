@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OCA\DAV\SystemTag;
 
 use OCA\DAV\Connector\Sabre\Directory;
@@ -163,7 +164,7 @@ class SystemTagPlugin extends \Sabre\DAV\ServerPlugin {
 			throw new BadRequest('Missing "name" attribute');
 		}
 
-		$tagName = $data['name'];
+		$tagName = Util::sanitizeWordsAndEmojis($data['name']);
 		$userVisible = true;
 		$userAssignable = true;
 

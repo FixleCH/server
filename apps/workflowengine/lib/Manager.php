@@ -4,6 +4,7 @@
  * SPDX-FileCopyrightText: 2016 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OCA\WorkflowEngine;
 
 use NCU\WorkflowEngine\Events\RegisterRuntimeOperationsEvent;
@@ -122,12 +123,15 @@ class Manager implements IManager {
 		}
 
 		$query = $this->connection->getQueryBuilder();
-
-		$query->select('class', 'entity')
-			->selectAlias($query->expr()->castColumn('events', IQueryBuilder::PARAM_STR), 'events')
+		$subQuery = $this->connection->getQueryBuilder();
+		$subQuery->select('class', 'entity')
+			->selectAlias($subQuery->expr()->castColumn('events', IQueryBuilder::PARAM_STR), 'events')
 			->from('flow_operations')
-			->where($query->expr()->neq('events', $query->createNamedParameter('[]'), IQueryBuilder::PARAM_STR))
-			->groupBy('class', 'entity', $query->expr()->castColumn('events', IQueryBuilder::PARAM_STR));
+			->where($subQuery->expr()->neq('events', $query->createNamedParameter('[]'), IQueryBuilder::PARAM_STR));
+
+		$query->select('class', 'entity', 'events')
+			->from($query->createFunction('(' . $subQuery->getSQL() . ')'), 'sub')
+			->groupBy('class', 'entity', 'events');
 
 		$result = $query->executeQuery();
 		$operations = [];
@@ -807,7 +811,6 @@ class Manager implements IManager {
 		]);
 		$insertQuery->executeStatement();
 	}
-
 
 	/**
 	 * @param array{class: class-string<\OCP\WorkflowEngine\IOperation>, entity: class-string<\OCP\WorkflowEngine\IEntity>, checks: string, events: string, id: int, name: string, operation: string} $operation

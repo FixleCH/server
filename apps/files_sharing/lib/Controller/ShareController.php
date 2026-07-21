@@ -1,10 +1,11 @@
 <?php
 
 /**
- * SPDX-FileCopyrightText: 2016-2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-FileCopyrightText: 2016-2026 Nextcloud GmbH and Nextcloud contributors
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OCA\Files_Sharing\Controller;
 
 use OC\ServerNotAvailableException;
@@ -175,7 +176,7 @@ class ShareController extends AuthPublicShareController {
 
 	#[\Override]
 	protected function isPasswordProtected(): bool {
-		return $this->share->getPassword() !== null;
+		return $this->share->isPasswordProtected();
 	}
 
 	#[\Override]
@@ -261,18 +262,6 @@ class ShareController extends AuthPublicShareController {
 	 * @return bool
 	 */
 	private function validateShare(IShare $share) {
-		// If the owner is disabled no access to the link is granted
-		$owner = $this->userManager->get($share->getShareOwner());
-		if ($owner === null || !$owner->isEnabled()) {
-			return false;
-		}
-
-		// If the initiator of the share is disabled no access is granted
-		$initiator = $this->userManager->get($share->getSharedBy());
-		if ($initiator === null || !$initiator->isEnabled()) {
-			return false;
-		}
-
 		return $share->getNode()->isReadable() && $share->getNode()->isShareable();
 	}
 
@@ -324,7 +313,6 @@ class ShareController extends AuthPublicShareController {
 			$this->emitShareAccessEvent($share, self::SHARE_ACCESS, 404, 'Share not found');
 			throw $e;
 		}
-
 
 		$this->emitAccessShareHook($share);
 		$this->emitShareAccessEvent($share, self::SHARE_ACCESS);

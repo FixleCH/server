@@ -4,9 +4,9 @@
  * SPDX-FileCopyrightText: 2019 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OC\DirectEditing;
 
-use Doctrine\DBAL\FetchMode;
 use OCA\Encryption\Util;
 use OCP\AppFramework\Http\NotFoundResponse;
 use OCP\AppFramework\Http\Response;
@@ -124,6 +124,7 @@ class Manager implements IManager {
 		throw new \RuntimeException('No creator found');
 	}
 
+	#[\Override]
 	public function open(string $filePath, ?string $editorId = null, ?int $fileId = null): string {
 		$userFolder = $this->rootFolder->getUserFolder($this->userId);
 		$file = $userFolder->get($filePath);
@@ -203,7 +204,7 @@ class Manager implements IManager {
 		$query->select('*')->from(self::TABLE_TOKENS)
 			->where($query->expr()->eq('token', $query->createNamedParameter($token, IQueryBuilder::PARAM_STR)));
 		$result = $query->executeQuery();
-		if ($tokenRow = $result->fetch(FetchMode::ASSOCIATIVE)) {
+		if ($tokenRow = $result->fetchAssociative()) {
 			return new Token($this, $tokenRow);
 		}
 		throw new \RuntimeException('Failed to validate the token');
@@ -225,7 +226,6 @@ class Manager implements IManager {
 		$result = $query->executeStatement();
 		return $result !== 0;
 	}
-
 
 	public function invalidateToken(string $token): bool {
 		$query = $this->connection->getQueryBuilder();

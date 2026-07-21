@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OCA\Files_External\Service;
 
 use OC\Files\Storage\Common;
@@ -61,6 +62,7 @@ class BackendService {
 
 	/** @var IConfigHandler[] */
 	private array $configHandlers = [];
+	private bool $eventSent = false;
 
 	public function __construct(
 		protected readonly IAppConfig $appConfig,
@@ -78,14 +80,14 @@ class BackendService {
 		$this->backendProviders[] = $provider;
 	}
 
-	private function callForRegistrations() {
-		static $eventSent = false;
-		if (!$eventSent) {
+	private function callForRegistrations(): void {
+		$instance = Server::get(self::class);
+		if (!$instance->eventSent) {
 			Server::get(IEventDispatcher::class)->dispatch(
 				'OCA\\Files_External::loadAdditionalBackends',
 				new GenericEvent()
 			);
-			$eventSent = true;
+			$instance->eventSent = true;
 		}
 	}
 
@@ -185,7 +187,7 @@ class BackendService {
 	 * @return Backend[]
 	 */
 	public function getAvailableBackends() {
-		$backends = array_filter($this->getBackends(), fn (Backend $backend) => $backend->checkRequiredDependencies() === []);
+		$backends = array_filter($this->getBackends(), fn (Backend $backend) => $backend->checkRequiredDependencies() === [] && $backend->getDeprecateTo() === null);
 		uasort($backends, [Backend::class, 'lexicalCompare']);
 		return $backends;
 	}

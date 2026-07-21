@@ -4,6 +4,7 @@
  * SPDX-FileCopyrightText: 2024 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OC\TaskProcessing;
 
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -13,7 +14,6 @@ use OCP\TaskProcessing\Exception\Exception;
 use OCP\TaskProcessing\Exception\NotFoundException;
 use OCP\TaskProcessing\IManager;
 use OCP\TaskProcessing\ISynchronousProvider;
-use OCP\TaskProcessing\Task;
 use Psr\Log\LoggerInterface;
 
 class SynchronousBackgroundJob extends QueuedJob {
@@ -25,7 +25,6 @@ class SynchronousBackgroundJob extends QueuedJob {
 	) {
 		parent::__construct($timeFactory);
 	}
-
 
 	/**
 	 * @inheritDoc

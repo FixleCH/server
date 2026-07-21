@@ -10,14 +10,12 @@ declare(strict_types=1);
 
 namespace OC\AppFramework\DependencyInjection;
 
-use OC\AppFramework\App;
 use OC\AppFramework\Bootstrap\Coordinator;
 use OC\AppFramework\Http;
 use OC\AppFramework\Http\Dispatcher;
 use OC\AppFramework\Http\Output;
 use OC\AppFramework\Middleware\AdditionalScriptsMiddleware;
 use OC\AppFramework\Middleware\CompressionMiddleware;
-use OC\AppFramework\Middleware\FlowV2EphemeralSessionsMiddleware;
 use OC\AppFramework\Middleware\MiddlewareDispatcher;
 use OC\AppFramework\Middleware\MiddlewareUtils;
 use OC\AppFramework\Middleware\NotModifiedMiddleware;
@@ -29,7 +27,6 @@ use OC\AppFramework\Middleware\Security\CSPMiddleware;
 use OC\AppFramework\Middleware\Security\FeaturePolicyMiddleware;
 use OC\AppFramework\Middleware\Security\PasswordConfirmationMiddleware;
 use OC\AppFramework\Middleware\Security\RateLimitingMiddleware;
-use OC\AppFramework\Middleware\Security\ReloadExecutionMiddleware;
 use OC\AppFramework\Middleware\Security\SameSiteCookieMiddleware;
 use OC\AppFramework\Middleware\Security\SecurityMiddleware;
 use OC\AppFramework\Middleware\SessionMiddleware;
@@ -202,12 +199,9 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 
 			$dispatcher->registerMiddleware($c->get(CompressionMiddleware::class));
 			$dispatcher->registerMiddleware($c->get(NotModifiedMiddleware::class));
-			$dispatcher->registerMiddleware($c->get(ReloadExecutionMiddleware::class));
 			$dispatcher->registerMiddleware($c->get(SameSiteCookieMiddleware::class));
 			$dispatcher->registerMiddleware($c->get(CORSMiddleware::class));
 			$dispatcher->registerMiddleware($c->get(OCSMiddleware::class));
-
-			$dispatcher->registerMiddleware($c->get(FlowV2EphemeralSessionsMiddleware::class));
 
 			$securityMiddleware = new SecurityMiddleware(
 				$c->get(IRequest::class),

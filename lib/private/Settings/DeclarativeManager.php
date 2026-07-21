@@ -5,6 +5,7 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OC\Settings;
 
 use Exception;
@@ -146,8 +147,10 @@ class DeclarativeManager implements IDeclarativeManager {
 				if ($section !== null && $schema['section_id'] !== $section) {
 					continue;
 				}
-				// If listing all fields skip the admin fields which a non-admin user has no access to
-				if ($type === null && $schema['section_type'] === 'admin' && !$isAdmin) {
+				// Skip admin declarative forms for non-admin users. They have no access to
+				// these fields even when they are allowed to view the section through admin
+				// delegation, which only covers non-declarative settings.
+				if ($schema['section_type'] === DeclarativeSettingsTypes::SECTION_TYPE_ADMIN && !$isAdmin) {
 					continue;
 				}
 

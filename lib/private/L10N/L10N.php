@@ -6,6 +6,7 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC\L10N;
 
 use OCP\IL10N;
@@ -56,15 +57,6 @@ class L10N implements IL10N {
 		return $this->locale ?? '';
 	}
 
-	/**
-	 * Translating
-	 * @param string $text The text we need a translation for
-	 * @param array|string $parameters default:array() Parameters for sprintf
-	 * @return string Translation or the same text
-	 *
-	 * Returns the translation. If no translation is found, $text will be
-	 * returned.
-	 */
 	#[\Override]
 	public function t(string $text, $parameters = []): string {
 		if (!\is_array($parameters)) {

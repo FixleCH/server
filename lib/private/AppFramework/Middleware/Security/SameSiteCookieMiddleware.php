@@ -6,11 +6,13 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2017 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OC\AppFramework\Middleware\Security;
 
 use OC\AppFramework\Http\Request;
 use OC\AppFramework\Middleware\MiddlewareUtils;
 use OC\AppFramework\Middleware\Security\Exceptions\LaxSameSiteCookieFailedException;
+use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\Attribute\NoSameSiteCookieRequired;
 use OCP\AppFramework\Http\Response;
@@ -25,7 +27,7 @@ class SameSiteCookieMiddleware extends Middleware {
 	}
 
 	#[\Override]
-	public function beforeController($controller, $methodName) {
+	public function beforeController(Controller $controller, string $methodName): void {
 		$requestUri = $this->request->getScriptName();
 		$processingScript = explode('/', $requestUri);
 		$processingScript = $processingScript[count($processingScript) - 1];
@@ -46,7 +48,7 @@ class SameSiteCookieMiddleware extends Middleware {
 	}
 
 	#[\Override]
-	public function afterException($controller, $methodName, \Exception $exception) {
+	public function afterException(Controller $controller, string $methodName, \Exception $exception) {
 		if ($exception instanceof LaxSameSiteCookieFailedException) {
 			$response = new Response();
 			$response->setStatus(Http::STATUS_FOUND);

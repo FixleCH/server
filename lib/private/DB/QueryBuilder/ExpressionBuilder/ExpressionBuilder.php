@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC\DB\QueryBuilder\ExpressionBuilder;
 
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder as DoctrineExpressionBuilder;
@@ -312,6 +313,26 @@ class ExpressionBuilder implements IExpressionBuilder {
 		$x = $this->helper->quoteColumnName($x);
 		$y = $this->helper->quoteColumnName($y);
 		return $this->expressionBuilder->notLike($x, $y);
+	}
+
+	/**
+	 * Creates a NOT ILIKE() comparison expression with the given arguments.
+	 *
+	 * @param ILiteral|IParameter|IQueryFunction|string $x Field in string format to be inspected by NOT ILIKE() comparison.
+	 * @param ILiteral|IParameter|IQueryFunction|string $y Argument to be used in NOT ILIKE() comparison.
+	 * @param int|string|null $type one of the IQueryBuilder::PARAM_* constants
+	 *                              required when comparing text fields for oci compatibility
+	 *
+	 * @return string
+	 * @since 35.0.0
+	 */
+	#[\Override]
+	public function notILike(
+		string|IParameter|ILiteral|IQueryFunction $x,
+		string|IParameter|ILiteral|IQueryFunction $y,
+		int|string|null $type = null,
+	): string {
+		return $this->expressionBuilder->notLike((string)$this->functionBuilder->lower($x), (string)$this->functionBuilder->lower($y));
 	}
 
 	/**

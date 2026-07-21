@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OCA\Files_Sharing\AppInfo;
 
 use OC\Group\DisplayNameCache as GroupDisplayNameCache;
@@ -23,6 +24,7 @@ use OCA\Files_Sharing\Listener\BeforeZipCreatedListener;
 use OCA\Files_Sharing\Listener\LoadAdditionalListener;
 use OCA\Files_Sharing\Listener\LoadPublicFileRequestAuthListener;
 use OCA\Files_Sharing\Listener\LoadSidebarListener;
+use OCA\Files_Sharing\Listener\RestrictInteractionListener;
 use OCA\Files_Sharing\Listener\ShareInteractionListener;
 use OCA\Files_Sharing\Listener\SharesUpdatedListener;
 use OCA\Files_Sharing\Listener\UserAddedToGroupListener;
@@ -55,6 +57,7 @@ use OCP\Group\Events\UserRemovedEvent;
 use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\IGroup;
+use OCP\Interaction\RestrictInteractionEvent;
 use OCP\Share\Events\BeforeShareDeletedEvent;
 use OCP\Share\Events\ShareCreatedEvent;
 use OCP\Share\Events\ShareMovedEvent;
@@ -131,6 +134,8 @@ class Application extends App implements IBootstrap {
 		$context->registerEventListener(UserHomeSetupEvent::class, UserHomeSetupListener::class);
 
 		$context->registerConfigLexicon(ConfigLexicon::class);
+
+		$context->registerEventListener(RestrictInteractionEvent::class, RestrictInteractionListener::class);
 	}
 
 	#[\Override]
@@ -140,7 +145,6 @@ class Application extends App implements IBootstrap {
 
 		Helper::registerHooks();
 	}
-
 
 	public function registerMountProviders(IMountProviderCollection $mountProviderCollection, MountProvider $mountProvider, ExternalMountProvider $externalMountProvider): void {
 		$mountProviderCollection->registerProvider($mountProvider);
@@ -161,7 +165,7 @@ class Application extends App implements IBootstrap {
 		// notifications api to accept incoming user shares
 		$dispatcher->addListener(ShareCreatedEvent::class, function (ShareCreatedEvent $event): void {
 			/** @var Listener $listener */
-			$listener = $this->getContainer()->query(Listener::class);
+			$listener = $this->getContainer()->get(Listener::class);
 			$listener->shareNotification($event);
 		});
 		$dispatcher->addListener(IGroup::class . '::postAddUser', function ($event): void {
@@ -169,7 +173,7 @@ class Application extends App implements IBootstrap {
 				return;
 			}
 			/** @var Listener $listener */
-			$listener = $this->getContainer()->query(Listener::class);
+			$listener = $this->getContainer()->get(Listener::class);
 			$listener->userAddedToGroup($event);
 		});
 	}

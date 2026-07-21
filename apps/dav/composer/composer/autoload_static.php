@@ -7,14 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInitDAV
 {
     public static $prefixLengthsPsr4 = array (
-        'O' =>
+        'O' => 
         array (
             'OCA\\DAV\\' => 8,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'OCA\\DAV\\' =>
+        'OCA\\DAV\\' => 
         array (
             0 => __DIR__ . '/..' . '/../lib',
         ),
@@ -332,6 +332,7 @@ class ComposerStaticInitDAV
         'OCA\\DAV\\Events\\SubscriptionUpdatedEvent' => __DIR__ . '/..' . '/../lib/Events/SubscriptionUpdatedEvent.php',
         'OCA\\DAV\\Exception\\ExampleEventException' => __DIR__ . '/..' . '/../lib/Exception/ExampleEventException.php',
         'OCA\\DAV\\Exception\\ServerMaintenanceMode' => __DIR__ . '/..' . '/../lib/Exception/ServerMaintenanceMode.php',
+        'OCA\\DAV\\Exception\\UidConflict' => __DIR__ . '/..' . '/../lib/Exception/UidConflict.php',
         'OCA\\DAV\\Exception\\UnsupportedLimitOnInitialSyncException' => __DIR__ . '/..' . '/../lib/Exception/UnsupportedLimitOnInitialSyncException.php',
         'OCA\\DAV\\Files\\BrowserErrorPagePlugin' => __DIR__ . '/..' . '/../lib/Files/BrowserErrorPagePlugin.php',
         'OCA\\DAV\\Files\\FileSearchBackend' => __DIR__ . '/..' . '/../lib/Files/FileSearchBackend.php',
@@ -346,6 +347,7 @@ class ComposerStaticInitDAV
         'OCA\\DAV\\Listener\\AddressbookListener' => __DIR__ . '/..' . '/../lib/Listener/AddressbookListener.php',
         'OCA\\DAV\\Listener\\BirthdayListener' => __DIR__ . '/..' . '/../lib/Listener/BirthdayListener.php',
         'OCA\\DAV\\Listener\\CalendarContactInteractionListener' => __DIR__ . '/..' . '/../lib/Listener/CalendarContactInteractionListener.php',
+        'OCA\\DAV\\Listener\\CalendarDelegateActionListener' => __DIR__ . '/..' . '/../lib/Listener/CalendarDelegateActionListener.php',
         'OCA\\DAV\\Listener\\CalendarDeletionDefaultUpdaterListener' => __DIR__ . '/..' . '/../lib/Listener/CalendarDeletionDefaultUpdaterListener.php',
         'OCA\\DAV\\Listener\\CalendarFederationNotificationListener' => __DIR__ . '/..' . '/../lib/Listener/CalendarFederationNotificationListener.php',
         'OCA\\DAV\\Listener\\CalendarObjectReminderUpdaterListener' => __DIR__ . '/..' . '/../lib/Listener/CalendarObjectReminderUpdaterListener.php',

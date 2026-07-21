@@ -6,6 +6,7 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2017 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OC\Calendar;
 
 use DateTimeInterface;
@@ -34,7 +35,6 @@ use Sabre\VObject\Component\VCalendar;
 use Sabre\VObject\Component\VEvent;
 use Sabre\VObject\Component\VFreeBusy;
 use Sabre\VObject\ParseException;
-use Sabre\VObject\Property\VCard\DateTime;
 use Sabre\VObject\Reader;
 use Throwable;
 use function array_map;

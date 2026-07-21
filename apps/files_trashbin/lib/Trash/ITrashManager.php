@@ -6,6 +6,7 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2018 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OCA\Files_Trashbin\Trash;
 
 use OCP\IUser;
@@ -29,6 +30,15 @@ interface ITrashManager extends ITrashBackend {
 	 */
 	#[\Override]
 	public function listTrashRoot(IUser $user): array;
+
+	/**
+	 * Get a specific item in the root of the trashbin
+	 *
+	 * @param IUser $user
+	 * @return ?ITrashItem
+	 * @since 35.0.0
+	 */
+	public function getTrashRootItem(IUser $user, string $name): ?ITrashItem;
 
 	/**
 	 * Temporally prevent files from being moved to the trash

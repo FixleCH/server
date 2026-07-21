@@ -5,11 +5,12 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OCA\DAV\CardDAV;
 
 use OCP\AppFramework\Http;
 use OCP\Files\NotFoundException;
-use Sabre\CardDAV\Card;
+use Sabre\CardDAV\ICard;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
 use Sabre\HTTP\RequestInterface;
@@ -63,7 +64,7 @@ class ImageExportPlugin extends ServerPlugin {
 		$path = $request->getPath();
 		$node = $this->server->tree->getNodeForPath($path);
 
-		if (!$node instanceof Card) {
+		if (!$node instanceof ICard) {
 			return true;
 		}
 

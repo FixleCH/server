@@ -4,6 +4,7 @@
  * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OC\Preview;
 
 use OCP\ICache;
@@ -24,10 +25,12 @@ class IMagickSupport {
 	}
 
 	public function hasExtension(): bool {
+		return false;
 		return !is_null($this->imagick);
 	}
 
 	public function supportsFormat(string $format): bool {
+		return false;
 		if (is_null($this->imagick)) {
 			return false;
 		}

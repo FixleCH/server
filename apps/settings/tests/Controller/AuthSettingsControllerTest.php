@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace Test\Settings\Controller;
 
 use OC\AppFramework\Http;
@@ -20,6 +21,7 @@ use OCP\Activity\IEvent;
 use OCP\Activity\IManager;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Services\IAppConfig;
+use OCP\Authentication\Exceptions\WipeTokenException;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IRequest;
@@ -144,7 +146,6 @@ class AuthSettingsControllerTest extends TestCase {
 		$this->tokenProvider->expects($this->never())
 			->method('getPassword');
 
-
 		$this->tokenProvider->expects($this->never())
 			->method('generateToken');
 
@@ -243,7 +244,7 @@ class AuthSettingsControllerTest extends TestCase {
 		$this->tokenProvider->expects($this->once())
 			->method('getTokenById')
 			->with($tokenId)
-			->willThrowException(new \OCP\Authentication\Exceptions\WipeTokenException($token));
+			->willThrowException(new WipeTokenException($token));
 
 		// The token is still invalidated (the user opted into cancelling the wipe).
 		$this->tokenProvider->expects($this->once())

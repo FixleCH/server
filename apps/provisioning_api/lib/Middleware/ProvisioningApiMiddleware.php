@@ -6,6 +6,7 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2016 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OCA\Provisioning_API\Middleware;
 
 use OCA\Provisioning_API\Middleware\Exceptions\NotSubAdminException;
@@ -40,7 +41,7 @@ class ProvisioningApiMiddleware extends Middleware {
 	 * @throws NotSubAdminException
 	 */
 	#[\Override]
-	public function beforeController($controller, $methodName) {
+	public function beforeController(Controller $controller, string $methodName): void {
 		// If AuthorizedAdminSetting, the check will be done in the SecurityMiddleware
 		if (!$this->isAdmin && !$this->reflector->hasAnnotation('NoSubAdminRequired') && !$this->isSubAdmin && !$this->reflector->hasAnnotationOrAttribute('AuthorizedAdminSetting', AuthorizedAdminSetting::class)) {
 			throw new NotSubAdminException();
@@ -55,7 +56,7 @@ class ProvisioningApiMiddleware extends Middleware {
 	 * @return Response
 	 */
 	#[\Override]
-	public function afterException($controller, $methodName, \Exception $exception) {
+	public function afterException(Controller $controller, string $methodName, \Exception $exception) {
 		if ($exception instanceof NotSubAdminException) {
 			throw new OCSException($exception->getMessage(), Http::STATUS_FORBIDDEN);
 		}

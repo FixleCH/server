@@ -6,6 +6,7 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC\User;
 
 use InvalidArgumentException;
@@ -297,7 +298,7 @@ class Database extends ABackend implements
 
 		$result = $query->executeQuery();
 		$displayNames = [];
-		while ($row = $result->fetch()) {
+		while ($row = $result->fetchAssociative()) {
 			$displayNames[(string)$row['uid']] = (string)$row['displayname'];
 		}
 
@@ -337,7 +338,7 @@ class Database extends ABackend implements
 
 		$result = $query->executeQuery();
 		$displayNames = [];
-		while ($row = $result->fetch()) {
+		while ($row = $result->fetchAssociative()) {
 			$displayNames[(string)$row['uid']] = (string)$row['displayname'];
 		}
 
@@ -399,7 +400,7 @@ class Database extends ABackend implements
 				)
 			);
 		$result = $qb->executeQuery();
-		$row = $result->fetch();
+		$row = $result->fetchAssociative();
 		$result->closeCursor();
 
 		// "uid" is primary key, so there can only be a single result

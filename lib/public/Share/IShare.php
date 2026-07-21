@@ -1,10 +1,11 @@
 <?php
 
 /**
- * SPDX-FileCopyrightText: 2016-2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-FileCopyrightText: 2016-2026 Nextcloud GmbH and Nextcloud contributors
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OCP\Share;
 
 use OCP\AppFramework\Attribute\Consumable;
@@ -353,7 +354,6 @@ interface IShare {
 	 */
 	public function getNote();
 
-
 	/**
 	 * Set the expiration date
 	 *
@@ -379,7 +379,6 @@ interface IShare {
 	 * @since 30.0.0
 	 */
 	public function setNoExpirationDate(bool $noExpirationDate);
-
 
 	/**
 	 * Get value of overwrite falsy expiry date flag
@@ -468,6 +467,13 @@ interface IShare {
 	 * @since 9.0.0
 	 */
 	public function getPassword();
+
+	/**
+	 * Returns whether the share is password protected by any means (e.g. password or OTP)
+	 * @return bool
+	 * @since 35.0.0
+	 */
+	public function isPasswordProtected(): bool;
 
 	/**
 	 * Set the password's expiration time of this share.

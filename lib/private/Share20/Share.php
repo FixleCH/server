@@ -1,10 +1,11 @@
 <?php
 
 /**
- * SPDX-FileCopyrightText: 2016-2024 Nextcloud GmbH and Nextcloud contributors
+ * SPDX-FileCopyrightText: 2016-2026 Nextcloud GmbH and Nextcloud contributors
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC\Share20;
 
 use OCP\Constants;
@@ -34,8 +35,9 @@ class Share implements IShare {
 	private $shareType;
 	/** @var string */
 	private $sharedWith;
-	/** @var string */
-	private $sharedWithDisplayName;
+	private ?string $sharedWithDisplayName = null;
+	/** @var ?callable */
+	private $sharedWithDisplayNameCallback = null;
 	/** @var string */
 	private $sharedWithAvatar;
 	/** @var string */
@@ -259,11 +261,24 @@ class Share implements IShare {
 	}
 
 	/**
-	 * @inheritdoc
+	 * @param callable(IShare):?string $callback
+	 * @return $this
 	 */
+	public function setSharedWithDisplayNameCallback(callable $callback) {
+		$this->sharedWithDisplayNameCallback = $callback;
+		return $this;
+	}
+
 	#[\Override]
 	public function getSharedWithDisplayName() {
-		return $this->sharedWithDisplayName;
+		if ($this->sharedWithDisplayNameCallback !== null) {
+			$displayName = ($this->sharedWithDisplayNameCallback)($this);
+			if ($displayName !== null) {
+				$this->sharedWithDisplayName = $displayName;
+			}
+			$this->sharedWithDisplayNameCallback = null;
+		}
+		return $this->sharedWithDisplayName ?? '';
 	}
 
 	/**
@@ -490,6 +505,14 @@ class Share implements IShare {
 	#[\Override]
 	public function getPassword() {
 		return $this->password;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	#[\Override]
+	public function isPasswordProtected(): bool {
+		return $this->password !== '' && $this->password !== null;
 	}
 
 	/**

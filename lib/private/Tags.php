@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC;
 
 use OC\Tagging\Tag;
@@ -26,7 +27,7 @@ class Tags implements ITags {
 	/**
 	 * Used for storing objectid/categoryname pairs while rescanning.
 	 */
-	private static array $relations = [];
+	private array $relations = [];
 	private array $tags = [];
 
 	/**
@@ -163,7 +164,7 @@ class Tags implements ITags {
 				$qb->setParameter('type', $this->type, IQueryBuilder::PARAM_STR);
 				$qb->setParameter('chunk', $chunk, IQueryBuilder::PARAM_INT_ARRAY);
 				$result = $qb->executeQuery();
-				while ($row = $result->fetch()) {
+				while ($row = $result->fetchAssociative()) {
 					$objId = (int)$row['objid'];
 					if (!isset($entries[$objId])) {
 						$entries[$objId] = [];
@@ -228,7 +229,7 @@ class Tags implements ITags {
 			return false;
 		}
 
-		while ($row = $result->fetch()) {
+		while ($row = $result->fetchAssociative()) {
 			$ids[] = (int)$row['objid'];
 		}
 		$result->closeCursor();
@@ -361,7 +362,7 @@ class Tags implements ITags {
 			}
 			if (!is_null($id)) {
 				// Insert $objectid, $categoryid  pairs if not exist.
-				self::$relations[] = ['objid' => $id, 'tag' => $name];
+				$this->relations[] = ['objid' => $id, 'tag' => $name];
 			}
 		}
 		$this->tags = array_merge($this->tags, $newones);
@@ -394,10 +395,7 @@ class Tags implements ITags {
 		$this->logger->debug(__METHOD__ . 'tags' . print_r($this->tags, true), ['app' => 'core']);
 		// Loop through temporarily cached objectid/tagname pairs
 		// and save relations.
-		$tags = $this->tags;
-		// For some reason this is needed or array_search(i) will return 0..?
-		ksort($tags);
-		foreach (self::$relations as $relation) {
+		foreach ($this->relations as $relation) {
 			$tagId = $this->getTagId($relation['tag']);
 			$this->logger->debug(__METHOD__ . 'catid ' . $relation['tag'] . ' ' . $tagId, ['app' => 'core']);
 			if ($tagId) {
@@ -418,7 +416,7 @@ class Tags implements ITags {
 				}
 			}
 		}
-		self::$relations = []; // reset
+		$this->relations = []; // reset
 	}
 
 	/**

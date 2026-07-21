@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC\Files\Storage\Wrapper;
 
 use OC\Encryption\Exceptions\ModuleDoesNotExistsException;
@@ -22,7 +23,6 @@ use OCP\Encryption\IEncryptionModule;
 use OCP\Encryption\IFile;
 use OCP\Encryption\IManager;
 use OCP\Encryption\Keys\IStorage;
-use OCP\Files;
 use OCP\Files\Cache\ICacheEntry;
 use OCP\Files\GenericFileException;
 use OCP\Files\Mount\IMountPoint;
@@ -382,7 +382,6 @@ class Encryption extends Wrapper {
 
 		return $this->getWrapperStorage()->fopen($path, $mode);
 	}
-
 
 	/**
 	 * perform some plausibility checks if the unencrypted size is correct.

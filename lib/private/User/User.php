@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC\User;
 
 use InvalidArgumentException;
@@ -44,7 +45,6 @@ use OCP\User\GetQuotaEvent;
 use OCP\UserInterface;
 use OCP\Util;
 use Psr\Log\LoggerInterface;
-
 use function json_decode;
 use function json_encode;
 
@@ -56,6 +56,7 @@ class User implements IUser {
 	private IAssertion $assertion;
 	protected ?IAccountManager $accountManager = null;
 
+	/** @var ?non-empty-string $displayName */
 	private ?string $displayName = null;
 	private ?bool $enabled = null;
 	private ?string $home = null;
@@ -65,6 +66,7 @@ class User implements IUser {
 	private ?IAvatarManager $avatarManager = null;
 
 	public function __construct(
+		/** @var non-empty-string $uid */
 		private string $uid,
 		private ?UserInterface $backend,
 		private IEventDispatcher $dispatcher,
@@ -481,11 +483,9 @@ class User implements IUser {
 
 	/**
 	 * set the enabled status for the user
-	 *
-	 * @return void
 	 */
 	#[\Override]
-	public function setEnabled(bool $enabled = true) {
+	public function setEnabled(bool $enabled = true): void {
 		$oldStatus = $this->isEnabled();
 		$setDatabaseValue = function (bool $enabled): void {
 			$this->config->setUserValue($this->uid, 'core', 'enabled', $enabled ? 'true' : 'false');
@@ -524,18 +524,12 @@ class User implements IUser {
 		return $this->getPrimaryEMailAddress() ?? $this->getSystemEMailAddress();
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	#[\Override]
 	public function getSystemEMailAddress(): ?string {
 		$email = $this->config->getUserValue($this->uid, 'settings', 'email', null);
 		return $email ? mb_strtolower(trim($email)) : null;
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	#[\Override]
 	public function getPrimaryEMailAddress(): ?string {
 		$email = $this->config->getUserValue($this->uid, 'settings', 'primary_email', null);

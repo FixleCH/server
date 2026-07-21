@@ -16,7 +16,6 @@ use OC\Files\Storage\Wrapper\Wrapper;
 use OCA\Circles\Api\v1\Circles;
 use OCA\Deck\Sharing\ShareAPIHelper;
 use OCA\Federation\TrustedServers;
-use OCA\Files\Helper;
 use OCA\Files_Sharing\Exceptions\SharingRightsException;
 use OCA\Files_Sharing\External\Storage;
 use OCA\Files_Sharing\ResponseDefinitions;
@@ -76,6 +75,9 @@ use Psr\Log\LoggerInterface;
  * @psalm-import-type Files_SharingShare from ResponseDefinitions
  */
 class ShareAPIController extends OCSController {
+
+	/** Maximum length of a custom share token, matching the oc_share.token database column. */
+	private const TOKEN_MAX_LENGTH = 32;
 
 	private ?Node $lockedNode = null;
 	/** @var array<bool> $trustedServerCache */
@@ -339,7 +341,6 @@ class ShareAPIController extends OCSController {
 			}
 		}
 
-
 		$result['mail_send'] = $share->getMailSend() ? 1 : 0;
 		$result['hide_download'] = $share->getHideDownload() ? 1 : 0;
 
@@ -390,7 +391,6 @@ class ShareAPIController extends OCSController {
 		return $query;
 	}
 
-
 	/**
 	 * @param list<Files_SharingShare> $shares
 	 * @param array<string, string>|null $updatedDisplayName
@@ -432,7 +432,6 @@ class ShareAPIController extends OCSController {
 		return $this->fixMissingDisplayName($shares, $displayNames);
 	}
 
-
 	/**
 	 * get displayName of a list of userIds from the lookup-server; through the globalsiteselector app.
 	 * returns an array with userIds as keys and displayName as values.
@@ -464,7 +463,6 @@ class ShareAPIController extends OCSController {
 		return $slaveService->getUsersDisplayName($userIds, $cacheOnly);
 	}
 
-
 	/**
 	 * retrieve displayName from cache if available (should be used on federated shares)
 	 * if not available in cache/lus, try for get from address-book, else returns empty string.
@@ -483,8 +481,6 @@ class ShareAPIController extends OCSController {
 		$displayName = $this->getDisplayNameFromAddressBook($userId, 'CLOUD');
 		return ($displayName === $userId) ? '' : $displayName;
 	}
-
-
 
 	/**
 	 * Get a specific share by id
@@ -721,10 +717,6 @@ class ShareAPIController extends OCSController {
 			$share->setSharedWith($shareWith);
 			$share->setPermissions($permissions);
 		} elseif ($shareType === IShare::TYPE_GROUP) {
-			if (!$this->shareManager->allowGroupSharing()) {
-				throw new OCSNotFoundException($this->l->t('Group sharing is disabled by the administrator'));
-			}
-
 			// Valid group is required to share
 			if ($shareWith === null || !$this->groupManager->groupExists($shareWith)) {
 				throw new OCSNotFoundException($this->l->t('Please specify a valid group'));
@@ -733,11 +725,6 @@ class ShareAPIController extends OCSController {
 			$share->setPermissions($permissions);
 		} elseif ($shareType === IShare::TYPE_LINK
 			|| $shareType === IShare::TYPE_EMAIL) {
-
-			// Can we even share links?
-			if (!$this->shareManager->shareApiAllowLinks()) {
-				throw new OCSNotFoundException($this->l->t('Public link sharing is disabled by the administrator'));
-			}
 
 			$this->validateLinkSharePermissions($node, $permissions, $hasPublicUpload);
 			$share->setPermissions($permissions);
@@ -772,10 +759,6 @@ class ShareAPIController extends OCSController {
 				$share->setSendPasswordByTalk(true);
 			}
 		} elseif ($shareType === IShare::TYPE_REMOTE) {
-			if (!$this->shareManager->outgoingServer2ServerSharesAllowed()) {
-				throw new OCSForbiddenException($this->l->t('Sharing %1$s failed because the back end does not allow shares from type %2$s', [$node->getPath(), $shareType]));
-			}
-
 			if ($shareWith === null) {
 				throw new OCSNotFoundException($this->l->t('Please specify a valid federated account ID'));
 			}
@@ -784,10 +767,6 @@ class ShareAPIController extends OCSController {
 			$share->setPermissions($permissions);
 			$share->setSharedWithDisplayName($this->getCachedFederatedDisplayName($shareWith, false));
 		} elseif ($shareType === IShare::TYPE_REMOTE_GROUP) {
-			if (!$this->shareManager->outgoingServer2ServerGroupSharesAllowed()) {
-				throw new OCSForbiddenException($this->l->t('Sharing %1$s failed because the back end does not allow shares from type %2$s', [$node->getPath(), $shareType]));
-			}
-
 			if ($shareWith === null) {
 				throw new OCSNotFoundException($this->l->t('Please specify a valid federated group ID'));
 			}
@@ -1046,12 +1025,6 @@ class ShareAPIController extends OCSController {
 			&& ($this->hasPermission($permissions, Constants::PERMISSION_UPDATE) || $this->hasPermission($permissions, Constants::PERMISSION_DELETE))) {
 			throw new OCSBadRequestException($this->l->t('Share must have READ permission if UPDATE or DELETE permission is set'));
 		}
-
-		// Check if public uploading was disabled
-		if ($this->hasPermission($permissions, Constants::PERMISSION_CREATE)
-			&& !$this->shareManager->shareApiLinkAllowPublicUpload()) {
-			throw new OCSForbiddenException($this->l->t('Public upload disabled by the administrator'));
-		}
 	}
 
 	/**
@@ -1137,7 +1110,6 @@ class ShareAPIController extends OCSController {
 
 		return $formatted;
 	}
-
 
 	/**
 	 * Get all shares relative to a file, including parent folders shares rights
@@ -1370,7 +1342,7 @@ class ShareAPIController extends OCSController {
 					throw new OCSForbiddenException($this->l->t('Custom share link tokens have been disabled by the administrator'));
 				}
 				if (!$this->validateToken($token)) {
-					throw new OCSBadRequestException($this->l->t('Tokens must contain at least 1 character and may only contain letters, numbers, or a hyphen'));
+					throw new OCSBadRequestException($this->l->t('Tokens must be between 1 and %s characters long and may only contain letters, numbers, or a hyphen', [self::TOKEN_MAX_LENGTH]));
 				}
 				$share->setToken($token);
 			}
@@ -1409,7 +1381,8 @@ class ShareAPIController extends OCSController {
 	}
 
 	private function validateToken(string $token): bool {
-		if (mb_strlen($token) === 0) {
+		$length = mb_strlen($token);
+		if ($length === 0 || $length > self::TOKEN_MAX_LENGTH) {
 			return false;
 		}
 		if (!preg_match('/^[a-z0-9-]+$/i', $token)) {
@@ -1881,7 +1854,6 @@ class ShareAPIController extends OCSController {
 		return $shares;
 	}
 
-
 	/**
 	 * @param Node $node
 	 *
@@ -1892,7 +1864,6 @@ class ShareAPIController extends OCSController {
 			throw new SharingRightsException($this->l->t('No sharing rights on this item'));
 		}
 	}
-
 
 	/**
 	 * @param string $viewer
@@ -1919,7 +1890,6 @@ class ShareAPIController extends OCSController {
 
 		return false;
 	}
-
 
 	/**
 	 * Returns if we can find resharing rights in an IShare object for a specific user.
@@ -2019,7 +1989,6 @@ class ShareAPIController extends OCSController {
 
 		return array_merge($userShares, $groupShares, $linkShares, $mailShares, $circleShares, $roomShares, $deckShares, $federatedShares, $federatedGroupShares);
 	}
-
 
 	/**
 	 * merging already formatted shares.

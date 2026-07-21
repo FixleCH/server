@@ -7,6 +7,7 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC;
 
 use bantu\IniGetWrapper\IniGetWrapper;
@@ -15,6 +16,7 @@ use InvalidArgumentException;
 use OC\AppFramework\Bootstrap\Coordinator;
 use OC\Authentication\Token\PublicKeyTokenProvider;
 use OC\Authentication\Token\TokenCleanupJob;
+use OC\Core\BackgroundJobs\CleanupBackgroundJobsJob;
 use OC\Core\BackgroundJobs\ExpirePreviewsJob;
 use OC\Core\BackgroundJobs\GenerateMetadataJob;
 use OC\Core\BackgroundJobs\PreviewMigrationJob;
@@ -27,6 +29,7 @@ use OC\Setup\PostgreSQL;
 use OC\Setup\Sqlite;
 use OC\TextProcessing\RemoveOldTasksBackgroundJob;
 use OC\User\BackgroundJobs\CleanupDeletedUsers;
+use OC\User\BackgroundJobs\CleanupLoginTokens;
 use OC\User\Session;
 use OCP\AppFramework\QueryException;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -528,9 +531,11 @@ class Setup {
 		$jobList->add(BackgroundCleanupJob::class);
 		$jobList->add(RemoveOldTasksBackgroundJob::class);
 		$jobList->add(CleanupDeletedUsers::class);
+		$jobList->add(CleanupLoginTokens::class);
 		$jobList->add(GenerateMetadataJob::class);
 		$jobList->add(PreviewMigrationJob::class);
 		$jobList->add(ExpirePreviewsJob::class);
+		$jobList->add(CleanupBackgroundJobsJob::class);
 	}
 
 	/**
@@ -578,6 +583,15 @@ class Setup {
 		}
 
 		$setupHelper = Server::get(Setup::class);
+
+		// Note: The .htaccess file also needs to exist, otherwise `is_writable()`
+		// will return false, even though the file could be written.
+		// This function writes the .htaccess file in that case.
+		if (!file_exists($setupHelper->pathToHtaccess())) {
+			if (!touch($setupHelper->pathToHtaccess())) {
+				return false;
+			}
+		}
 
 		if (!is_writable($setupHelper->pathToHtaccess())) {
 			return false;

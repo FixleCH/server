@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OCA\DAV;
 
 use OC\Files\Filesystem;
@@ -95,6 +96,7 @@ use OCP\ISession;
 use OCP\ITagManager;
 use OCP\IURLGenerator;
 use OCP\IUserSession;
+use OCP\L10N\IFactory;
 use OCP\Mail\IEmailValidator;
 use OCP\Mail\IMailer;
 use OCP\Profiler\IProfiler;
@@ -132,7 +134,7 @@ class Server {
 		$this->server->setLogger($logger);
 
 		// Add maintenance plugin
-		$this->server->addPlugin(new MaintenancePlugin(\OCP\Server::get(IConfig::class), \OC::$server->getL10N('dav')));
+		$this->server->addPlugin(new MaintenancePlugin(\OCP\Server::get(IConfig::class), \OCP\Server::get(IFactory::class)->get('dav')));
 
 		$this->server->addPlugin(new AppleQuirksPlugin());
 
@@ -149,7 +151,9 @@ class Server {
 		$this->server->httpRequest->setUrl($this->request->getRequestUri());
 		$this->server->setBaseUri($this->baseUri);
 
-		$this->server->addPlugin(new ProfilerPlugin($this->request));
+		if ($this->profiler->isEnabled()) {
+			$this->server->addPlugin(new ProfilerPlugin($this->request));
+		}
 		$this->server->addPlugin(new BlockLegacyClientPlugin(
 			\OCP\Server::get(IConfig::class),
 			\OCP\Server::get(ThemingDefaults::class),
@@ -398,7 +402,7 @@ class Server {
 					\OCP\Server::get(IURLGenerator::class),
 					\OCP\Server::get(ThemingDefaults::class),
 					\OCP\Server::get(IRequest::class),
-					\OC::$server->getL10N('dav'),
+					\OCP\Server::get(IFactory::class)->get('dav'),
 					function () {
 						return UUIDUtil::getUUID();
 					}

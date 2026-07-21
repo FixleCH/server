@@ -7,6 +7,7 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC\Repair;
 
 use Doctrine\DBAL\Exception\DriverException;
@@ -89,7 +90,7 @@ class Collation implements IRepairStep {
 			. "	AND TABLE_NAME LIKE '*PREFIX*%'",
 			[$dbName]
 		);
-		$rows = $statement->fetchAll();
+		$rows = $statement->fetchAllAssociative();
 		$result = [];
 		foreach ($rows as $row) {
 			$result[$row['table']] = true;
@@ -104,7 +105,7 @@ class Collation implements IRepairStep {
 			. "	AND TABLE_NAME LIKE '*PREFIX*%'",
 			[$dbName]
 		);
-		$rows = $statement->fetchAll();
+		$rows = $statement->fetchAllAssociative();
 		foreach ($rows as $row) {
 			$result[$row['table']] = true;
 		}

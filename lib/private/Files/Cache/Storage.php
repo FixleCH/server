@@ -7,6 +7,7 @@ declare(strict_types=1);
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC\Files\Cache;
 
 use OC\DB\Exceptions\DbalException;
@@ -169,7 +170,7 @@ class Storage {
 			$query->select('storage_id')
 				->from('mounts')
 				->where($query->expr()->eq('mount_id', $query->createNamedParameter($mountId, IQueryBuilder::PARAM_INT)));
-			$storageIds = $query->executeQuery()->fetchAll(\PDO::FETCH_COLUMN);
+			$storageIds = $query->executeQuery()->fetchFirstColumn();
 			$storageIds = array_unique($storageIds);
 
 			$query = $db->getQueryBuilder();

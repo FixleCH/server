@@ -17,9 +17,11 @@ use OC\Core\Command\App\Remove;
 use OC\Core\Command\App\Update;
 use OC\Core\Command\Background\Delete;
 use OC\Core\Command\Background\Job;
+use OC\Core\Command\Background\JobsHistory;
 use OC\Core\Command\Background\JobWorker;
 use OC\Core\Command\Background\ListCommand;
 use OC\Core\Command\Background\Mode;
+use OC\Core\Command\Background\RunningJobs;
 use OC\Core\Command\Broadcast\Test;
 use OC\Core\Command\Check;
 use OC\Core\Command\Config\App\DeleteConfig;
@@ -34,6 +36,10 @@ use OC\Core\Command\Db\AddMissingPrimaryKeys;
 use OC\Core\Command\Db\ConvertFilecacheBigInt;
 use OC\Core\Command\Db\ConvertMysqlToMB4;
 use OC\Core\Command\Db\ConvertType;
+use OC\Core\Command\Db\DbIndexUsage;
+use OC\Core\Command\Db\DbInfo;
+use OC\Core\Command\Db\DbLocks;
+use OC\Core\Command\Db\DbSize;
 use OC\Core\Command\Db\ExpectedSchema;
 use OC\Core\Command\Db\ExportSchema;
 use OC\Core\Command\Db\Migrations\ExecuteCommand;
@@ -148,6 +154,8 @@ if ($config->getSystemValueBool('installed', false)) {
 	$application->add(Server::get(ListCommand::class));
 	$application->add(Server::get(Delete::class));
 	$application->add(Server::get(JobWorker::class));
+	$application->add(Server::get(RunningJobs::class));
+	$application->add(Server::get(JobsHistory::class));
 
 	$application->add(Server::get(Test::class));
 
@@ -172,6 +180,10 @@ if ($config->getSystemValueBool('installed', false)) {
 	$application->add(Server::get(AddMissingColumns::class));
 	$application->add(Server::get(AddMissingIndices::class));
 	$application->add(Server::get(AddMissingPrimaryKeys::class));
+	$application->add(Server::get(DbInfo::class));
+	$application->add(Server::get(DbSize::class));
+	$application->add(Server::get(DbIndexUsage::class));
+	$application->add(Server::get(DbLocks::class));
 	$application->add(Server::get(ExpectedSchema::class));
 	$application->add(Server::get(ExportSchema::class));
 

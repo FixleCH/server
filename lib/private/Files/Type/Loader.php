@@ -5,6 +5,7 @@
  * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 namespace OC\Files\Type;
 
 use OC\DB\Exceptions\DbalException;
@@ -135,7 +136,7 @@ class Loader implements IMimeTypeLoader {
 			->from('mimetypes');
 
 		$result = $qb->executeQuery();
-		$results = $result->fetchAll();
+		$results = $result->fetchAllAssociative();
 		$result->closeCursor();
 
 		foreach ($results as $row) {

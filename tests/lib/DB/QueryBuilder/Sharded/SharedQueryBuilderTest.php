@@ -26,13 +26,14 @@ class SharedQueryBuilderTest extends TestCase {
 
 	#[\Override]
 	protected function setUp(): void {
+		parent::setUp();
+
 		if (PHP_INT_SIZE < 8) {
 			$this->markTestSkipped('Test requires 64bit');
 		}
 		$this->connection = Server::get(IDBConnection::class);
 		$this->autoIncrementHandler = Server::get(AutoIncrementHandler::class);
 	}
-
 
 	private function getQueryBuilder(string $table, string $shardColumn, string $primaryColumn, array $companionTables = []): ShardedQueryBuilder {
 		return new ShardedQueryBuilder(

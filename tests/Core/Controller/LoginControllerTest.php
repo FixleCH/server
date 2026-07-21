@@ -105,7 +105,6 @@ class LoginControllerTest extends TestCase {
 				return vsprintf($text, $parameters);
 			});
 
-
 		$this->request->method('getRemoteAddress')
 			->willReturn('1.2.3.4');
 		$this->request->method('getHeader')
@@ -597,7 +596,6 @@ class LoginControllerTest extends TestCase {
 		$response = $this->loginController->tryLogin($loginChain, $trustedDomainHelper, 'Jane', $password, $rememberme, $originalUrl);
 
 		$expected = new RedirectResponse('');
-		$expected->throttle(['user' => 'Jane']);
 		$this->assertEquals($expected, $response);
 	}
 

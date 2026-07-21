@@ -4,6 +4,7 @@
  * SPDX-FileCopyrightText: 2018 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace OCA\Files_Trashbin\Trash;
 
 use OCP\Files\Storage\IStorage;
@@ -36,6 +37,26 @@ class TrashManager implements ITrashManager {
 			return $b->getDeletedTime() - $a->getDeletedTime();
 		});
 		return $items;
+	}
+
+	#[\Override]
+	public function getTrashRootItem(IUser $user, string $name): ?ITrashItem {
+		foreach ($this->getBackends() as $backend) {
+			if (method_exists($backend, 'getTrashRootItem')) {
+				$item = $backend->getTrashRootItem($user, $name);
+				if ($item !== null) {
+					return $item;
+				}
+			} else {
+				$items = $backend->listTrashRoot($user);
+				foreach ($items as $item) {
+					if ($item->getName() === $name) {
+						return $item;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	private function getBackendForItem(ITrashItem $item) {
